@@ -19,7 +19,7 @@
 ;; in your shell for neoterm. (e.g.: display a different prompt inside neovim)
 
 ;; Exposed variables (can be read by plugins/custom scripts):
-;; - b:neoterm_name (notice that the term-name is also appended to the buffer
+;; - b:nterm_name (notice that the term-name is also appended to the buffer
 ;; name. Buffer name is shown with `:ls` or with the api
 ;; vim.api.nvim_buf_get_name(0)
 ;; - g:current_term: current active terminal. Commands are send here, unless a
@@ -134,6 +134,12 @@
       (nvim.buf_delete buf-id {:force true})))
   (a.assoc terms name nil))
 
+(defn- move-cur-bottom! [name]
+  (let [buf-id (a.get-in terms [name :buf])
+        win-id (get-term-win name)
+        lines (nvim.buf_line_count buf-id)]
+    (nvim.win_set_cursor win-id [lines 1])))
+
 (defn- term-new [name]
   "Creates a terminal in a new window"
   (let [[win-id buf-id] (open-window)
@@ -144,11 +150,13 @@
     ;                                                       :env {:SHELL "fish"
     ;                                                             :FOO "BAR"}}]))
     (nvim.buf_set_option buf-id :filetype filetype)
+    (nvim.buf_set_var buf-id "nterm_name" name)
     ; On exit the process, delete buffer and window
     (local job-id (vim.fn.termopen cmd {:on_exit #(term-destroy name)
                                         :env {:SHELL shell
                                               :FOO "BAR"}}))
-    ; (nvim.command "wincmd p")
+    ; Move cursor to the bottom
+    (nvim.win_set_cursor win-id [(nvim.buf_line_count buf-id) 1])
     (a.assoc terms
              name
              {:name name
@@ -200,6 +208,7 @@
 (defn term-send [line name]
   (let [name (or name :default)]
     (term-open name)
+    (move-cur-bottom! name)
     (nvim.fn.chansend
       (a.get-in terms [name :job])
       (.. line "\n"))))
@@ -235,7 +244,7 @@
 
   ;;
   ;; Internal API
-  (get-term-win)
+  (get-term-win :default)
   (tab-get-open-terms)
 
   ;; Playground
@@ -244,4 +253,3 @@
   (term-open :bar)
   (nvim.set_current_win 1318)
   (term-send "ls"))
-
