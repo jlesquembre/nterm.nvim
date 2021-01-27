@@ -30,7 +30,7 @@
 
 
 ;; Functions
-;; - (term-send line close-after term-name) => Sends a line to the term, openning
+;; - (term_send line close-after term-name) => Sends a line to the term, openning
 ;; it if closed. close-after is the number of seconds to close the terminal
 ;; after a command is sucesfully executed. Default to -1 (don't close)
 ;; - (term_toggle) => toggle all terminals. If all closed will reopen all the previusly closed by this command
@@ -205,7 +205,7 @@
       (a.run! term-open (or nvim.g._nterm_terms [:default])))))
 
 ; TODO if the term doens't exist, wait until ready to send data
-(defn term-send [line name]
+(defn term_send [line name]
   (let [name (or name :default)]
     (term-open name)
     (move-cur-bottom! name)
@@ -213,9 +213,32 @@
       (a.get-in terms [name :job])
       (.. line "\n"))))
 
+(defn- trim-with-pos [str]
+  "Removes whitespace from both ends of the current line.
+   Returns the text, the position of the first and the last non-whitespace characters"
+  (let [line (s.trim str)
+        (_ start-pos) (string.find str "^%s*(.-)")
+        end-pos (+ (length line) start-pos)]
+    [line start-pos end-pos]))
+
+; :help setreg
+; rtype = 'c'
+; rtype = 'l'
+; rtype = 'b'
+(defn- highlight [start end rtype]
+  (let [ns (nvim.create_namespace "")
+        buf (nvim.get_current_buf)
+        rtype (or rtype "c")]
+    (vim.highlight.range buf ns "IncSearch" start end rtype)
+    (vim.defer_fn #(nvim.buf_clear_namespace buf ns (a.first start) (a.inc (a.first end)))
+                  500)))
+
+
 (defn term_send_cur_line [name]
-  (let [line (s.trim (nvim.get_current_line))]
-    (term-send line name)))
+  (let [line-nr (a.dec (vim.fn.line "."))
+        [line col-start col-end] (trim-with-pos (nvim.get_current_line))]
+    (highlight [line-nr col-start] [line-nr col-end])
+    (term_send line name)))
 
 
 ;;; MAPS
@@ -225,9 +248,14 @@
     (nvim.set_keymap "n" "<leader>tt" "<cmd>lua require'nterm'.term_toggle()<cr>" opts)
     (nvim.set_keymap "n" "<leader>tl" "<cmd>lua require'nterm'.term_send_cur_line()<cr>" opts)))
 
+(defn add-git-maps []
+  (let [opts {:noremap true
+              :silent false}]
+    (nvim.set_keymap "n" "<leader>gp" "<cmd>lua require'nterm'.term_send('git push', 'git')<cr>" opts)))
 
 (defn init [options]
-  (add-maps))
+  (add-maps)
+  (add-git-maps))
 
 
 (comment
@@ -239,7 +267,7 @@
   ;; Following fns accept an optional extra parameter, term-name. Defaults to :default
   (term-open)
   (term-close)
-  (term-send "ls")
+  (term_send "ls")
   (term_send_cur_line)
 
   ;;
@@ -252,4 +280,4 @@
   (term-open :foo)
   (term-open :bar)
   (nvim.set_current_win 1318)
-  (term-send "ls"))
+  (term_send "ls"))
