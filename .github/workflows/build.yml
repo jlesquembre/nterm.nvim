@@ -1,4 +1,4 @@
-name: "Build"
+name: "Compile to Lua"
 on:
   push:
     branches:
