@@ -17,5 +17,6 @@ in
 pkgs.mkShell {
   buildInputs = [
     compile
+    pkgs.niv
   ];
 }

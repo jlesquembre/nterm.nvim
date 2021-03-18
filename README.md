@@ -1,5 +1,7 @@
 # nterm.nvim
 
+WIP
+
 A neovim plugin to interact with the terminal emulator
 
 ## Usage
