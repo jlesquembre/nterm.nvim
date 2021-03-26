@@ -261,6 +261,36 @@
   (add-git-maps))
 
 
+(defn create-server [host port on-connect]
+  (let [server (vim.loop.new_tcp)]
+    (server:bind host port)
+    (server:listen 128
+                   (fn [err]
+                     (let [sock (vim.loop.new_tcp)]
+                        (server:accept sock)
+                        (on-connect sock))))
+    server))
+
+(global server nil)
+
+(comment
+  (global server (create-server "0.0.0.0"
+                                0
+                                (fn [sock]
+                                  (sock:read_start (fn [err data]
+                                                     (if data
+                                                       (do
+                                                         ; ((vim.schedule_wrap #(term_send (.. "echo '" (s.trim data) "'"))))
+                                                         (vim.schedule #(term_send (.. "echo '" (s.trim data) "'")))
+                                                         (sock:write "OK"))
+                                                       ; (sock:write data)
+                                                       (sock:close)))))))
+  (print (.. "TCP server on port " (a.get (server:getsockname) :port)))
+  (server:close))
+  ;; to call it:
+  ;; echo 'aa' | nc -q 1  0.0.0.0 $PORT
+
+
 (comment
   ;; Public api
   (def term-name? :default)
