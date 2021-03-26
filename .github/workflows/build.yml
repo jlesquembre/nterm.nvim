@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - master
+    paths:
+      - "src/**"
+      - "nix/**"
+      - "**.nix"
 jobs:
   compile:
     runs-on: ubuntu-latest

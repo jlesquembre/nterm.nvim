@@ -14,7 +14,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@master
         with:
-          commit-message: "Update nix deps [skip ci]"
+          commit-message: "Update nix deps"
           title: Update nix dependencies with niv
           assignees: jlesquembre
           branch: update-niv
