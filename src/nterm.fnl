@@ -118,6 +118,9 @@
   (local win-id (nvim.get_current_win))
   (nvim.win_set_option win-id "number" false)
   (nvim.win_set_option win-id "relativenumber" false)
+  (if (= (a.get options :direction) :horizontal)
+    (nvim.win_set_option win-id "winfixheight" true)
+    (nvim.win_set_option win-id "winfixwidth" true))
   [win-id (nvim.win_get_buf win-id)])
 
 

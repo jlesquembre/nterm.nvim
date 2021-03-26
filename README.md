@@ -1,6 +1,6 @@
 # nterm.nvim
 
-WIP
+Warning: WIP
 
 A neovim plugin to interact with the terminal emulator
 
@@ -16,3 +16,8 @@ require'nterm'.init({
 ```
 
 ## Maps
+
+## Similar projects
+
+- [nvim-toggleterm.lua](https://github.com/akinsho/nvim-toggleterm.lua)
+- [neoterm](https://github.com/kassio/neoterm)
