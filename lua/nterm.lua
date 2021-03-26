@@ -169,6 +169,11 @@ do
     local win_id = nvim.get_current_win()
     nvim.win_set_option(win_id, "number", false)
     nvim.win_set_option(win_id, "relativenumber", false)
+    if (a.get(options, "direction") == "horizontal") then
+      nvim.win_set_option(win_id, "winfixheight", true)
+    else
+      nvim.win_set_option(win_id, "winfixwidth", true)
+    end
     return {win_id, nvim.win_get_buf(win_id)}
   end
   v_0_ = open_window0
