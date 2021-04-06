@@ -1,6 +1,8 @@
-(module nterm
+(module nterm.main
   {require {a aniseed.core
             s aniseed.string
+            ui nterm.ui
+            server-utils nterm.server-utils
             nvim aniseed.nvim}})
 
 ;; Plugin to interact with the neovim terminal
@@ -40,6 +42,7 @@
 ;; Low level exposed functions
 ;; (term-open term-name)
 ;; (term-close term-name)
+;; (term-stop term-name)
 
 ;; Ideas
 
@@ -55,11 +58,12 @@
   {:size 20
    :direction :horizontal
    :shell "fish"
-   :bg_color nil})
+   :popup 2000
+   :popup_pos :SE
+   :autoclose 2500})
 
 (defn get-terms []
   terms)
-
 
 
 (defn- get-term-by-buf [buf-id]
@@ -143,11 +147,91 @@
         lines (nvim.buf_line_count buf-id)]
     (nvim.win_set_cursor win-id [lines 1])))
 
+(defn term-close [name]
+  (let [name (or name :default)
+        win-id (get-term-win name)]
+    (when win-id
+      (nvim.win_close win-id false))))
+
+(defn term-stop [name]
+  (term-close name)
+  (let [name (or name :default)
+        job-id (a.get-in terms [name :job])]
+    (when job-id
+      (vim.fn.jobstop job-id))))
+
+
+
+(def- shell->script-name
+  {"fish" "nterm.fish"})
+
+(defn- script-path [shell]
+  ; Hacky, until we have a solution for
+  ; https://github.com/Olical/aniseed/issues/34
+  (when (not nvim.g.nterm_path)
+    (nvim.command "source ~/projects/nterm.nvim/plugin/nterm_nvim.vim"))
+
+  (let [script (a.get shell->script-name shell)]
+    (when script
+      (.. nvim.g.nterm_path "/" script))))
+
+(defn- show-popup
+  [term-name exit-code cmd]
+  (let [timeout options.popup]
+    (when (< 0 timeout)
+      (let [ok (= 0 exit-code)
+            msg (if ok
+                    ["OK!"
+                     (.. "Terminal: " term-name)
+                     (.. "Cmd: " cmd)]
+                    [(.. "ERROR CODE: " exit-code)
+                     (.. "Terminal: " term-name)
+                     (.. "Cmd: " cmd)])]
+        (ui.popup msg {:timeout timeout
+                       :pos options.popup_pos
+                       :hl (if ok "NtermSuccess" "NtermError")})))))
+
+(defn process-client-response
+  [data]
+  (let [(name exit-code) (-> data
+                             (s.trim)
+                             (s.split "\r\n")
+                             (unpack))
+        exit-code (tonumber exit-code)
+        cmd (a.get-in terms [name :current-cmd])]
+    (show-popup name exit-code cmd)
+    (a.assoc-in terms [name :current-cmd] nil)
+
+    (when (and (= 0 exit-code)
+               (< 0 options.autoclose))
+      (vim.defer_fn
+        #(when (a.nil? (a.get-in terms [name :current-cmd]))
+           (term-close name))
+        options.autoclose))
+    {:name name
+     :code exit-code}))
+
+
+
+(defn init-server []
+  (if (a.nil? (. _G "nterm_server"))
+    (do
+      (global nterm_server (server-utils.create-server "0.0.0.0" 0 process-client-response))
+      (global nterm_port (a.get (nterm_server:getsockname) :port)))
+    (do
+      (nterm_server:close)
+      (global nterm_server (server-utils.create-server "0.0.0.0" nterm_port process-client-response)))))
+
+
+
 (defn- term-new [name]
   "Creates a terminal in a new window"
   (let [[win-id buf-id] (open-window)
         shell (a.get options :shell)
-        cmd (.. shell ";#" name)]
+        script (script-path shell)
+        ; cmd (.. shell ";#" name)
+        extra-args (if script (.. " -C 'source " script "'") "")
+        cmd (.. shell extra-args)]
 
     ; (local job-id (nvim.call_function "termopen" ["fish" {:clear_env true
     ;                                                       :env {:SHELL "fish"
@@ -157,7 +241,8 @@
     ; On exit the process, delete buffer and window
     (local job-id (vim.fn.termopen cmd {:on_exit #(term-destroy name)
                                         :env {:SHELL shell
-                                              :FOO "BAR"}}))
+                                              :NTERM_PORT (a.get (nterm_server:getsockname) :port)
+                                              :NTERM_NAME name}}))
     ; Move cursor to the bottom
     (nvim.win_set_cursor win-id [(nvim.buf_line_count buf-id) 1])
     (a.assoc terms
@@ -165,6 +250,8 @@
              {:name name
               ; :win win-id
               :buf buf-id
+              :cmds []
+              :current-cmd nil
               :job job-id})))
 
 (defn- term-display [name]
@@ -192,13 +279,6 @@
     (nvim.set_current_win cur-win)))
 
 
-(defn term-close [name]
-  (let [name (or name :default)
-        win-id (get-term-win name)]
-    (when win-id
-      (nvim.win_close win-id false))))
-
-
 (defn term_toggle []
   (let [open-terms (tab-get-open-terms)]
     (if (< 0 (a.count open-terms))
@@ -208,13 +288,23 @@
       (a.run! term-open (or nvim.g._nterm_terms [:default])))))
 
 ; TODO if the term doens't exist, wait until ready to send data
-(defn term_send [line name]
+(defn term_send [cmd name]
   (let [name (or name :default)]
     (term-open name)
     (move-cur-bottom! name)
-    (nvim.fn.chansend
-      (a.get-in terms [name :job])
-      (.. line "\n"))))
+    (if (not= nil (a.get-in terms [name :current-cmd]))
+      (ui.popup
+        ["Command running in" (.. "terminal " name)]
+        {:hl "NtermError" :pos options.popup_pos})
+      (let [size (nvim.fn.chansend
+                   (a.get-in terms [name :job])
+                   (.. cmd "\n"))]
+        (when (< 0 size)
+          (a.assoc-in terms [name :current-cmd] cmd)
+          ; Save all commands
+          (let [cmds (a.get-in terms [name :cmds])]
+            (table.insert cmds cmd)))))))
+
 
 (defn- trim-with-pos [str]
   "Removes whitespace from both ends of the current line.
@@ -248,58 +338,31 @@
 (defn add-maps []
   (let [opts {:noremap true
               :silent false}]
-    (nvim.set_keymap "n" "<leader>tt" "<cmd>lua require'nterm'.term_toggle()<cr>" opts)
-    (nvim.set_keymap "n" "<leader>tl" "<cmd>lua require'nterm'.term_send_cur_line()<cr>" opts)))
+    (nvim.set_keymap "n" "<leader>tt" "<cmd>lua require'nterm.main'.term_toggle()<cr>" opts)
+    (nvim.set_keymap "n" "<leader>tl" "<cmd>lua require'nterm.main'.term_send_cur_line()<cr>" opts)))
 
 (defn add-git-maps []
   (let [opts {:noremap true
               :silent false}]
-    (nvim.set_keymap "n" "<leader>gp" "<cmd>lua require'nterm'.term_send('git push', 'git')<cr>" opts)))
+    (nvim.set_keymap "n" "<leader>gp" "<cmd>lua require'nterm.main'.term_send('git push', 'git')<cr>" opts)))
 
-(defn init [options]
+(defn init [user-options]
+  (let [user-options (or user-options {})]
+    (a.merge! options  user-options))
   (add-maps)
-  (add-git-maps))
+  (add-git-maps)
+  (init-server))
 
-
-(defn create-server [host port on-connect]
-  (let [server (vim.loop.new_tcp)]
-    (server:bind host port)
-    (server:listen 128
-                   (fn [err]
-                     (let [sock (vim.loop.new_tcp)]
-                        (server:accept sock)
-                        (on-connect sock))))
-    server))
-
-(global server nil)
-
-(comment
-  (global server (create-server "0.0.0.0"
-                                0
-                                (fn [sock]
-                                  (sock:read_start (fn [err data]
-                                                     (if data
-                                                       (do
-                                                         ; ((vim.schedule_wrap #(term_send (.. "echo '" (s.trim data) "'"))))
-                                                         (vim.schedule #(term_send (.. "echo '" (s.trim data) "'")))
-                                                         (sock:write "OK"))
-                                                       ; (sock:write data)
-                                                       (sock:close)))))))
-  (print (.. "TCP server on port " (a.get (server:getsockname) :port)))
-  (server:close))
-  ;; to call it:
-  ;; echo 'aa' | nc -q 1  0.0.0.0 $PORT
-
+; (init)
 
 (comment
   ;; Public api
-  (def term-name? :default)
-
   (get-terms)
   (term_toggle)
   ;; Following fns accept an optional extra parameter, term-name. Defaults to :default
   (term-open)
   (term-close)
+  (term-stop)
   (term_send "ls")
   (term_send_cur_line)
 
@@ -313,4 +376,5 @@
   (term-open :foo)
   (term-open :bar)
   (nvim.set_current_win 1318)
-  (term_send "ls"))
+  (term_send "sleep 2; true")
+  (term_send "sleep 2; false"))
