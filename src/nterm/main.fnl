@@ -55,12 +55,15 @@
 (defonce terms {})
 
 (def options
-  {:size 20
+  {:maps true
+   :size 20
    :direction :horizontal
    :shell "fish"
    :popup 2000
    :popup_pos :SE
-   :autoclose 2500})
+   :autoclose 2000})
+
+(def- loaded? false)
 
 (defn get-terms []
   terms)
@@ -101,28 +104,28 @@
           $1))
       wins)))
 
-(defn- open-window []
+(defn- open-window [opts]
   "Creates a new window and buffer, returns the window and buffer ID"
   (let [open-term (-> (tab-get-open-terms) a.last get-term-win)]
     (nvim.set_current_win open-term)
-    (if (= (a.get options :direction) :horizontal)
+    (if (= (a.get opts :direction) :horizontal)
       (if open-term
         (nvim.command "rightbelow vnew")
         (do
           ;; New window at the very bottom, see CTRL-W_J
           (nvim.command "botright new")
-          (nvim.win_set_height 0 (a.get options :size))))
+          (nvim.win_set_height 0 (a.get opts :size))))
       (if open-term
         (nvim.command "rightbelow new")
         (do
           ;; New window at the far right, see CTRL-W_L
           (nvim.command "vert botright new")
-          (nvim.win_set_width 0 (a.get options :size))))))
+          (nvim.win_set_width 0 (a.get opts :size))))))
 
   (local win-id (nvim.get_current_win))
   (nvim.win_set_option win-id "number" false)
   (nvim.win_set_option win-id "relativenumber" false)
-  (if (= (a.get options :direction) :horizontal)
+  (if (= (a.get opts :direction) :horizontal)
     (nvim.win_set_option win-id "winfixheight" true)
     (nvim.win_set_option win-id "winfixwidth" true))
   [win-id (nvim.win_get_buf win-id)])
@@ -176,8 +179,8 @@
       (.. nvim.g.nterm_path "/" script))))
 
 (defn- show-popup
-  [term-name exit-code cmd]
-  (let [timeout options.popup]
+  [term-name exit-code cmd opts]
+  (let [timeout opts.popup]
     (when (< 0 timeout)
       (let [ok (= 0 exit-code)
             msg (if ok
@@ -188,7 +191,7 @@
                      (.. "Terminal: " term-name)
                      (.. "Cmd: " cmd)])]
         (ui.popup msg {:timeout timeout
-                       :pos options.popup_pos
+                       :pos opts.popup_pos
                        :hl (if ok "NtermSuccess" "NtermError")})))))
 
 (defn process-client-response
@@ -198,16 +201,17 @@
                              (s.split "\r\n")
                              (unpack))
         exit-code (tonumber exit-code)
-        cmd (a.get-in terms [name :current-cmd])]
-    (show-popup name exit-code cmd)
+        {:cmd cmd :opts opts} (a.get-in terms [name :current-cmd])
+        opts (a.merge options (or opts {}))]
+    (show-popup name exit-code cmd opts)
     (a.assoc-in terms [name :current-cmd] nil)
 
     (when (and (= 0 exit-code)
-               (< 0 options.autoclose))
+               (< 0 opts.autoclose))
       (vim.defer_fn
         #(when (a.nil? (a.get-in terms [name :current-cmd]))
            (term-close name))
-        options.autoclose))
+        opts.autoclose))
     {:name name
      :code exit-code}))
 
@@ -224,18 +228,15 @@
 
 
 
-(defn- term-new [name]
+(defn- term-new [name opts]
   "Creates a terminal in a new window"
-  (let [[win-id buf-id] (open-window)
-        shell (a.get options :shell)
+  (let [[win-id buf-id] (open-window opts)
+        shell (a.get opts :shell)
         script (script-path shell)
         ; cmd (.. shell ";#" name)
         extra-args (if script (.. " -C 'source " script "'") "")
         cmd (.. shell extra-args)]
 
-    ; (local job-id (nvim.call_function "termopen" ["fish" {:clear_env true
-    ;                                                       :env {:SHELL "fish"
-    ;                                                             :FOO "BAR"}}]))
     (nvim.buf_set_option buf-id :filetype filetype)
     (nvim.buf_set_var buf-id "nterm_name" name)
     ; On exit the process, delete buffer and window
@@ -254,17 +255,17 @@
               :current-cmd nil
               :job job-id})))
 
-(defn- term-display [name]
+(defn- term-display [name opts]
   "Open an exising terminal"
   (let [buf-id (a.get-in terms [name :buf])
-        [win-id old-buf-id] (open-window)]
+        [win-id old-buf-id] (open-window opts)]
         ; old-buf-id (nvim.win_get_buf win-id)]
     (nvim.command "wincmd p")
     (nvim.win_set_buf win-id buf-id)
     (nvim.buf_delete old-buf-id {})))
 
 
-(defn term-open [name]
+(defn term-open [name opts]
   "Opens a term, if not opened yet.
    It creates a new terminal process if the term with the current name doesn't
    exits"
@@ -274,33 +275,63 @@
         term-buf-id (a.get-in terms [name :buf])]
     (if term-buf-id
       (when (not (get-term-win name))
-        (term-display name))
-      (term-new name))
+        (term-display name opts))
+      (term-new name opts))
     (nvim.set_current_win cur-win)))
 
 
-(defn term_toggle []
-  (let [open-terms (tab-get-open-terms)]
+(defn term_toggle [opts]
+  (let [opts (a.merge options (or opts {}))
+        open-terms (tab-get-open-terms)]
     (if (< 0 (a.count open-terms))
       (do
         (set nvim.g._nterm_terms open-terms)
         (a.run! term-close open-terms))
-      (a.run! term-open (or nvim.g._nterm_terms [:default])))))
+      (a.run! #(term-open $ opts) (or nvim.g._nterm_terms [:default])))))
+
+;; TODO Move to other NS?
+
+;;; MAPS
+(defn add-maps []
+  (let [opts {:noremap true
+              :silent false}]
+    (nvim.set_keymap "n" "<leader>tt" "<cmd>lua require'nterm.main'.term_toggle()<cr>" opts)
+    (nvim.set_keymap "n" "<leader>tl" "<cmd>lua require'nterm.main'.term_send_cur_line()<cr>" opts)))
+
+(defn add-git-maps []
+  (let [opts {:noremap true
+              :silent false}]
+    (nvim.set_keymap "n" "<leader>gp" "<cmd>lua require'nterm.main'.term_send('git push', 'git')<cr>" opts)))
+
+(defn init [user-options]
+  (let [user-options (or user-options {})]
+    (a.merge! options  user-options))
+  (when options.maps
+    (add-maps)
+    (add-git-maps))
+  (init-server)
+  (def- loaded? true))
+
+;;;
+
 
 ; TODO if the term doens't exist, wait until ready to send data
-(defn term_send [cmd name]
-  (let [name (or name :default)]
-    (term-open name)
+(defn term_send [cmd name opts]
+  (let [name (or name :default)
+        opts (a.merge options (or opts {}))]
+    (when (= false loaded?)
+      (init))
+    (term-open name opts)
     (move-cur-bottom! name)
     (if (not= nil (a.get-in terms [name :current-cmd]))
       (ui.popup
         ["Command running in" (.. "terminal " name)]
-        {:hl "NtermError" :pos options.popup_pos})
+        {:hl "NtermError" :pos opts.popup_pos})
       (let [size (nvim.fn.chansend
                    (a.get-in terms [name :job])
                    (.. cmd "\n"))]
         (when (< 0 size)
-          (a.assoc-in terms [name :current-cmd] cmd)
+          (a.assoc-in terms [name :current-cmd] {:cmd cmd :opts opts})
           ; Save all commands
           (let [cmds (a.get-in terms [name :cmds])]
             (table.insert cmds cmd)))))))
@@ -334,27 +365,6 @@
     (term_send line name)))
 
 
-;;; MAPS
-(defn add-maps []
-  (let [opts {:noremap true
-              :silent false}]
-    (nvim.set_keymap "n" "<leader>tt" "<cmd>lua require'nterm.main'.term_toggle()<cr>" opts)
-    (nvim.set_keymap "n" "<leader>tl" "<cmd>lua require'nterm.main'.term_send_cur_line()<cr>" opts)))
-
-(defn add-git-maps []
-  (let [opts {:noremap true
-              :silent false}]
-    (nvim.set_keymap "n" "<leader>gp" "<cmd>lua require'nterm.main'.term_send('git push', 'git')<cr>" opts)))
-
-(defn init [user-options]
-  (let [user-options (or user-options {})]
-    (a.merge! options  user-options))
-  (add-maps)
-  (add-git-maps)
-  (init-server))
-
-; (init)
-
 (comment
   ;; Public api
   (get-terms)
@@ -376,5 +386,5 @@
   (term-open :foo)
   (term-open :bar)
   (nvim.set_current_win 1318)
-  (term_send "sleep 2; true")
-  (term_send "sleep 2; false"))
+  (term_send "sleep 1; true" :default {:popup_pos :NW :popup 1000 :autoclose 1000})
+  (term_send "sleep 2; false" :default))
