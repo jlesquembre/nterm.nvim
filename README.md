@@ -6,6 +6,10 @@ support other shells are very welcome
 
 A neovim plugin to interact with the terminal emulator
 
+## Demo
+
+[![](http://img.youtube.com/vi/FdX5683TO1Y/0.jpg)](http://www.youtube.com/watch?v=FdX5683TO1Y)
+
 ## Installation
 
 [Neovim Nightly (0.5)](https://github.com/neovim/neovim/releases/tag/nightly)
