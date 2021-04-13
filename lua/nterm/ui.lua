@@ -183,5 +183,5 @@ end
 if (0 == nvim.fn.hlID("NtermError")) then
   highlight("NtermError", "d8d8d8", "ab4642")
 end
--- (popup table: 0x7ffff79a5cd0 table: 0x7ffff76ad818)
+-- (popup table: 0x7ffff7838938 table: 0x7ffff78c3f68)
 return nil

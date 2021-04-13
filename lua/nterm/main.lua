@@ -19,11 +19,11 @@ end
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
-    return {require("aniseed.core"), require("aniseed.nvim"), require("aniseed.string"), require("nterm.server-utils"), require("nterm.ui")}
+    return {require("aniseed.core"), require("aniseed.nvim"), require("aniseed.string"), require("nterm.server"), require("nterm.ui")}
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {["server-utils"] = "nterm.server-utils", a = "aniseed.core", nvim = "aniseed.nvim", s = "aniseed.string", ui = "nterm.ui"}}
+    _0_0["aniseed/local-fns"] = {require = {["server-utils"] = "nterm.server", a = "aniseed.core", nvim = "aniseed.nvim", s = "aniseed.string", ui = "nterm.ui"}}
     return val_0_
   else
     return print(val_0_)
@@ -637,5 +637,5 @@ do
   t_0_["term_send_cur_line"] = v_0_
   term_send_cur_line = v_0_
 end
--- (get-terms) (term_toggle) (term-open) (term-close) (term-stop) (term_send ls) (term_send_cur_line) (get-term-win default) (tab-get-open-terms) (get-terms) (term-open foo) (term-open bar) (nvim.set_current_win 1318) (term_send sleep 1; true default table: 0x7ffff782acf8) (term_send sleep 2; false default)
+-- (get-terms) (term_toggle) (term-open) (term-close) (term-stop) (term_send ls) (term_send_cur_line) (get-term-win default) (tab-get-open-terms) (get-terms) (term-open foo) (term-open bar) (nvim.set_current_win 1318) (term_send sleep 1; true default table: 0x7ffff788a858) (term_send sleep 2; false default)
 return nil

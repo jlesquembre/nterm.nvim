@@ -1,6 +1,6 @@
 local _0_0 = nil
 do
-  local name_0_ = "nterm.server-utils"
+  local name_0_ = "nterm.server"
   local module_0_ = nil
   do
     local x_0_ = package.loaded[name_0_]
@@ -34,7 +34,7 @@ local a = _local_0_[1]
 local nvim = _local_0_[2]
 local s = _local_0_[3]
 local _2amodule_2a = _0_0
-local _2amodule_name_2a = "nterm.server-utils"
+local _2amodule_name_2a = "nterm.server"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local conn_handler = nil
 do
