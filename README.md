@@ -79,7 +79,12 @@ Notice that `shell` option only is used if a terminal with that name doesn't
 exist. `size` and `direction` options are only used if the terminal is not
 visible. The other options are used in every command.
 
-## Maps
+### Colors
+
+You can customize the pop-up colors setting the highlighting groups
+`NtermSuccess` and `NtermError`
+
+### Maps
 
 ## Similar projects
 

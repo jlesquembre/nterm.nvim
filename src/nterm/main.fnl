@@ -2,7 +2,7 @@
   {require {a aniseed.core
             s aniseed.string
             ui nterm.ui
-            server-utils nterm.server-utils
+            server-utils nterm.server
             nvim aniseed.nvim}})
 
 ;; Plugin to interact with the neovim terminal

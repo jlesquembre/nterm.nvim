@@ -1,4 +1,4 @@
-(module nterm.server-utils
+(module nterm.server
   {require {a aniseed.core
             s aniseed.string
             nvim aniseed.nvim}})
