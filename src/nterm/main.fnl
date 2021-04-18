@@ -60,7 +60,7 @@
    :direction :horizontal
    :shell "fish"
    :popup 2000
-   :popup_pos :SE
+   :popup_pos :NE
    :autoclose 2000})
 
 (def- loaded? false)
@@ -302,7 +302,11 @@
 (defn add-git-maps []
   (let [opts {:noremap true
               :silent false}]
-    (nvim.set_keymap "n" "<leader>gp" "<cmd>lua require'nterm.main'.term_send('git push', 'git')<cr>" opts)))
+    (nvim.set_keymap "n" "<leader>gpp" "<cmd>lua require'nterm.main'.term_send('git push', 'git')<cr>" opts)
+    (nvim.set_keymap "n" "<leader>gps" "<cmd>lua require'nterm.main'.term_send('git push --set-upstream origin HEAD', 'git')<cr>" opts)
+    (nvim.set_keymap "n" "<leader>gpf" "<cmd>lua require'nterm.main'.term_send('git push --force-with-lease', 'git')<cr>" opts)
+    (nvim.set_keymap "n" "<leader>gpt" "<cmd>lua require'nterm.main'.term_send('git push --tags', 'git')<cr>" opts)
+    (nvim.set_keymap "n" "<leader>gt" "<cmd>lua require'nterm.main'.term_focus('git')<cr>" opts)))
 
 (defn init [user-options]
   (let [user-options (or user-options {})]
@@ -336,6 +340,13 @@
           ; Save all commands
           (let [cmds (a.get-in terms [name :cmds])]
             (table.insert cmds cmd)))))))
+
+(defn term_focus [name opts]
+  (let [name (or name :default)
+        opts (a.merge options (or opts {}))]
+    (term-open name opts)
+    (nvim.set_current_win (get-term-win name))
+    (vim.cmd "startinsert")))
 
 
 (defn- trim-with-pos [str]
