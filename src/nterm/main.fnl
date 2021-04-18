@@ -196,24 +196,25 @@
 
 (defn process-client-response
   [data]
-  (let [(name exit-code) (-> data
-                             (s.trim)
-                             (s.split "\r\n")
-                             (unpack))
+  (let [(name exit-code term-cmd) (-> data
+                                      (s.trim)
+                                      (s.split "\r\n")
+                                      (unpack))
         exit-code (tonumber exit-code)
-        {:cmd cmd :opts opts} (a.get-in terms [name :current-cmd])
+        {:cmd cmd :opts opts} (a.get-in terms [name :current-cmd] {})
         opts (a.merge options (or opts {}))]
-    (show-popup name exit-code cmd opts)
-    (a.assoc-in terms [name :current-cmd] nil)
+    (when (= cmd term-cmd) ;; Only if the cmd was send by the plugin
+      (show-popup name exit-code cmd opts)
+      (a.assoc-in terms [name :current-cmd] nil)
 
-    (when (and (= 0 exit-code)
-               (< 0 opts.autoclose))
-      (vim.defer_fn
-        #(when (a.nil? (a.get-in terms [name :current-cmd]))
-           (term-close name))
-        opts.autoclose))
-    {:name name
-     :code exit-code}))
+      (when (and (= 0 exit-code)
+                 (< 0 opts.autoclose))
+        (vim.defer_fn
+          #(when (a.nil? (a.get-in terms [name :current-cmd]))
+             (term-close name))
+          opts.autoclose))
+      {:name name
+       :code exit-code})))
 
 
 
@@ -367,14 +368,16 @@
 
 (comment
   ;; Public api
+  (init)
   (get-terms)
   (term_toggle)
+
   ;; Following fns accept an optional extra parameter, term-name. Defaults to :default
+  (term_send "ls")
+  (term_send_cur_line)
   (term-open)
   (term-close)
   (term-stop)
-  (term_send "ls")
-  (term_send_cur_line)
 
   ;;
   ;; Internal API

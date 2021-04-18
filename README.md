@@ -16,6 +16,9 @@ A neovim plugin to interact with the terminal emulator
 and [Olical/aniseed](https://github.com/Olical/aniseed) are required for
 `nterm.nvim` to work.
 
+[netcat](https://en.wikipedia.org/wiki/Netcat) (`nc` command) must also be
+installed in your system.
+
 Use your favourite plugin manager, a popular one is
 [vim-plug](https://github.com/junegunn/vim-plug):
 
