@@ -515,6 +515,7 @@ do
       nvim.set_keymap("n", "<leader>gps", "<cmd>lua require'nterm.main'.term_send('git push --set-upstream origin HEAD', 'git')<cr>", opts)
       nvim.set_keymap("n", "<leader>gpf", "<cmd>lua require'nterm.main'.term_send('git push --force-with-lease', 'git')<cr>", opts)
       nvim.set_keymap("n", "<leader>gpt", "<cmd>lua require'nterm.main'.term_send('git push --tags', 'git')<cr>", opts)
+      nvim.set_keymap("n", "<leader>gpu", "<cmd>lua require'nterm.main'.term_send('git pull --ff-only', 'git')<cr>", opts)
       return nvim.set_keymap("n", "<leader>gt", "<cmd>lua require'nterm.main'.term_focus('git')<cr>", opts)
     end
     v_0_0 = add_git_maps0
@@ -663,5 +664,5 @@ do
   t_0_["term_send_cur_line"] = v_0_
   term_send_cur_line = v_0_
 end
--- (init) (get-terms) (term_toggle) (term_send ls) (term_send_cur_line) (term-open) (term-close) (term-stop) (get-term-win default) (tab-get-open-terms) (get-terms) (term-open foo) (term-open bar) (nvim.set_current_win 1318) (term_send sleep 1; true default table: 0x7ffff7819ae0) (term_send sleep 2; false default)
+-- (init) (get-terms) (term_toggle) (term_send ls) (term_send_cur_line) (term-open) (term-close) (term-stop) (get-term-win default) (tab-get-open-terms) (get-terms) (term-open foo) (term-open bar) (nvim.set_current_win 1318) (term_send sleep 1; true default table: 0x7ffff7860818) (term_send sleep 2; false default)
 return nil
