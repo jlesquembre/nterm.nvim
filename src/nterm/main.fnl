@@ -306,6 +306,7 @@
     (nvim.set_keymap "n" "<leader>gps" "<cmd>lua require'nterm.main'.term_send('git push --set-upstream origin HEAD', 'git')<cr>" opts)
     (nvim.set_keymap "n" "<leader>gpf" "<cmd>lua require'nterm.main'.term_send('git push --force-with-lease', 'git')<cr>" opts)
     (nvim.set_keymap "n" "<leader>gpt" "<cmd>lua require'nterm.main'.term_send('git push --tags', 'git')<cr>" opts)
+    (nvim.set_keymap "n" "<leader>gpu" "<cmd>lua require'nterm.main'.term_send('git pull --ff-only', 'git')<cr>" opts)
     (nvim.set_keymap "n" "<leader>gt" "<cmd>lua require'nterm.main'.term_focus('git')<cr>" opts)))
 
 (defn init [user-options]
