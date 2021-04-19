@@ -66,7 +66,7 @@ local options = nil
 do
   local v_0_ = nil
   do
-    local v_0_0 = {autoclose = 2000, direction = "horizontal", maps = true, popup = 2000, popup_pos = "SE", shell = "fish", size = 20}
+    local v_0_0 = {autoclose = 2000, direction = "horizontal", maps = true, popup = 2000, popup_pos = "NE", shell = "fish", size = 20}
     _0_0["options"] = v_0_0
     v_0_ = v_0_0
   end
@@ -333,23 +333,25 @@ do
   do
     local v_0_0 = nil
     local function process_client_response0(data)
-      local name, exit_code = unpack(s.split(s.trim(data), "\13\n"))
+      local name, exit_code, term_cmd = unpack(s.split(s.trim(data), "\13\n"))
       local exit_code0 = tonumber(exit_code)
-      local _let_0_ = a["get-in"](terms, {name, "current-cmd"})
+      local _let_0_ = a["get-in"](terms, {name, "current-cmd"}, {})
       local cmd = _let_0_["cmd"]
       local opts = _let_0_["opts"]
       local opts0 = a.merge(options, (opts or {}))
-      show_popup(name, exit_code0, cmd, opts0)
-      a["assoc-in"](terms, {name, "current-cmd"}, nil)
-      if ((0 == exit_code0) and (0 < opts0.autoclose)) then
-        local function _2_()
-          if a["nil?"](a["get-in"](terms, {name, "current-cmd"})) then
-            return term_close(name)
+      if (cmd == term_cmd) then
+        show_popup(name, exit_code0, cmd, opts0)
+        a["assoc-in"](terms, {name, "current-cmd"}, nil)
+        if ((0 == exit_code0) and (0 < opts0.autoclose)) then
+          local function _2_()
+            if a["nil?"](a["get-in"](terms, {name, "current-cmd"})) then
+              return term_close(name)
+            end
           end
+          vim.defer_fn(_2_, opts0.autoclose)
         end
-        vim.defer_fn(_2_, opts0.autoclose)
+        return {code = exit_code0, name = name}
       end
-      return {code = exit_code0, name = name}
     end
     v_0_0 = process_client_response0
     _0_0["process-client-response"] = v_0_0
@@ -509,7 +511,11 @@ do
     local v_0_0 = nil
     local function add_git_maps0()
       local opts = {noremap = true, silent = false}
-      return nvim.set_keymap("n", "<leader>gp", "<cmd>lua require'nterm.main'.term_send('git push', 'git')<cr>", opts)
+      nvim.set_keymap("n", "<leader>gpp", "<cmd>lua require'nterm.main'.term_send('git push', 'git')<cr>", opts)
+      nvim.set_keymap("n", "<leader>gps", "<cmd>lua require'nterm.main'.term_send('git push --set-upstream origin HEAD', 'git')<cr>", opts)
+      nvim.set_keymap("n", "<leader>gpf", "<cmd>lua require'nterm.main'.term_send('git push --force-with-lease', 'git')<cr>", opts)
+      nvim.set_keymap("n", "<leader>gpt", "<cmd>lua require'nterm.main'.term_send('git push --tags', 'git')<cr>", opts)
+      return nvim.set_keymap("n", "<leader>gt", "<cmd>lua require'nterm.main'.term_focus('git')<cr>", opts)
     end
     v_0_0 = add_git_maps0
     _0_0["add-git-maps"] = v_0_0
@@ -583,6 +589,26 @@ do
   t_0_["term_send"] = v_0_
   term_send = v_0_
 end
+local term_focus = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function term_focus0(name, opts)
+      local name0 = (name or "default")
+      local opts0 = a.merge(options, (opts or {}))
+      term_open(name0, opts0)
+      nvim.set_current_win(get_term_win(name0))
+      return vim.cmd("startinsert")
+    end
+    v_0_0 = term_focus0
+    _0_0["term_focus"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["term_focus"] = v_0_
+  term_focus = v_0_
+end
 local trim_with_pos = nil
 do
   local v_0_ = nil
@@ -637,5 +663,5 @@ do
   t_0_["term_send_cur_line"] = v_0_
   term_send_cur_line = v_0_
 end
--- (get-terms) (term_toggle) (term-open) (term-close) (term-stop) (term_send ls) (term_send_cur_line) (get-term-win default) (tab-get-open-terms) (get-terms) (term-open foo) (term-open bar) (nvim.set_current_win 1318) (term_send sleep 1; true default table: 0x7ffff788a858) (term_send sleep 2; false default)
+-- (init) (get-terms) (term_toggle) (term_send ls) (term_send_cur_line) (term-open) (term-close) (term-stop) (get-term-win default) (tab-get-open-terms) (get-terms) (term-open foo) (term-open bar) (nvim.set_current_win 1318) (term_send sleep 1; true default table: 0x7ffff7819ae0) (term_send sleep 2; false default)
 return nil
