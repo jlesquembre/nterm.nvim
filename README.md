@@ -57,6 +57,9 @@ require'nterm.main'.init({
   popup_pos = "SE", --  one of "NE" "SE" "SW" "NW"
   autoclose = 2000, -- If command is sucesful, close the terminal after that number of miliseconds. 0 to disable
 })
+
+-- Optional, if you want to use the telescope extension
+require('telescope').load_extension('nterm')
 ```
 
 The main function provided by `nterm.nvim` is `term_send`:
@@ -88,6 +91,24 @@ You can customize the pop-up colors setting the highlighting groups
 `NtermSuccess` and `NtermError`
 
 ### Maps
+
+## Telescope extension
+
+Commands:
+
+```viml
+Telescope nterm
+
+" Using lua function
+lua require('telescope').extensions.nterm.nterm()
+```
+
+Telescope mappings:
+
+| mode   | key     | Action                 |
+| ------ | ------- | ---------------------- |
+| insert | `<cr>`  | Open current selection |
+| insert | `<c-e>` | Create new terminal    |
 
 ## Similar projects
 

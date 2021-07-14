@@ -68,7 +68,6 @@
 (defn get-terms []
   terms)
 
-
 (defn- get-term-by-buf [buf-id]
   "Returns the associated terminal name with the given buffer"
   (let [term-info (->> (get-terms)
@@ -271,6 +270,7 @@
    It creates a new terminal process if the term with the current name doesn't
    exits"
   (let [name (or name :default)
+        opts (or opts options)
         _ (check-term! name)
         cur-win (nvim.tabpage_get_win 0)
         term-buf-id (a.get-in terms [name :buf])]
@@ -279,7 +279,6 @@
         (term-display name opts))
       (term-new name opts))
     (nvim.set_current_win cur-win)))
-
 
 (defn term_toggle [opts]
   (let [opts (a.merge options (or opts {}))
