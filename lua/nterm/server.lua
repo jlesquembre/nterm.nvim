@@ -1,4 +1,4 @@
-local _2afile_2a = "/nix/store/03zw4w3grpwm2wmzrxsm47gh4537m79z-source/src/nterm/server.fnl"
+local _2afile_2a = "/nix/store/q3qb589zpcajvddm66bwi7zzm3689l14-source/src/nterm/server.fnl"
 local _0_
 do
   local name_0_ = "nterm.server"
