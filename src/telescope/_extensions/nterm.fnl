@@ -16,6 +16,13 @@
             conf :telescope.config}})
 
 ; (nterm-finder)
+
+;; About the entry_maker values:
+; ordinal is the value used for sorting
+; display is the value used to display
+; value, usually holds the original value you passed to the entry maker (but can be whatever)
+; text is like what you'd see for quickfix list
+
 (defn nterm-finder [user-opts]
   (let [opts (or user-opts {})
         ; conf (a.identity conf.values.generic_sorter)
@@ -23,8 +30,7 @@
                 :finder (finders.new_table
                           {:results (a.keys (nterm.get-terms))
                            :entry_maker (fn [line]
-                                           {
-                                            :ordinal  (a.get-in (nterm.get-terms) line :buf)
+                                           {:ordinal  (a.get-in (nterm.get-terms) line :buf)
                                             :display  line})})
                 :attach_mappings
                 (fn [bufnr map]
