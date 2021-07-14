@@ -1,4 +1,4 @@
-local _2afile_2a = "/nix/store/q3qb589zpcajvddm66bwi7zzm3689l14-source/src/nterm/main.fnl"
+local _2afile_2a = "/nix/store/hd176n5x6v7zfmmaiyxcgdwph7r61yn0-source/src/nterm/main.fnl"
 local _0_
 do
   local name_0_ = "nterm.main"
@@ -446,15 +446,16 @@ do
     local v_0_0
     local function term_open0(name, opts)
       local name0 = (name or "default")
+      local opts0 = (opts or options)
       local _ = check_term_21(name0)
       local cur_win = nvim.tabpage_get_win(0)
       local term_buf_id = a["get-in"](terms, {name0, "buf"})
       if term_buf_id then
         if not get_term_win(name0) then
-          term_display(name0, opts)
+          term_display(name0, opts0)
         end
       else
-        term_new(name0, opts)
+        term_new(name0, opts0)
       end
       return nvim.set_current_win(cur_win)
     end
@@ -670,5 +671,5 @@ do
   t_0_["term_send_cur_line"] = v_0_
   term_send_cur_line = v_0_
 end
--- (init) (get-terms) (term_toggle) (term_send ls) (term_send_cur_line) (term-open) (term-close) (term-stop) (get-term-win default) (tab-get-open-terms) (get-terms) (term-open foo) (term-open bar) (nvim.set_current_win 1318) (term_send sleep 1; true default table: 0x7ffff77007d0) (term_send sleep 2; false default)
+-- (init) (get-terms) (term_toggle) (term_send ls) (term_send_cur_line) (term-open) (term-close) (term-stop) (get-term-win default) (tab-get-open-terms) (get-terms) (term-open foo) (term-open bar) (nvim.set_current_win 1318) (term_send sleep 1; true default table: 0x7ffff75be680) (term_send sleep 2; false default)
 return nil
