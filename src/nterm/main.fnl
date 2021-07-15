@@ -99,7 +99,7 @@
     (nvim.win_set_option win-id "winfixheight" true)
     (nvim.win_set_option win-id "winfixwidth" true))
   (let [buf-id (nvim.win_get_buf win-id)]
-    (nvim.buf_set_option 12 :buflisted false)
+    (nvim.buf_set_option buf-id :buflisted false)
     [win-id buf-id]))
 
 
