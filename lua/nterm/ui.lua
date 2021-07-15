@@ -1,4 +1,4 @@
-local _2afile_2a = "/nix/store/1946766wrh6mqy6kl5gng4wk4m7p7ywv-source/src/nterm/ui.fnl"
+local _2afile_2a = "/nix/store/j9q1ilb1ydpgqdgygznhwxf0x7z2g7ar-source/src/nterm/ui.fnl"
 local _0_
 do
   local name_0_ = "nterm.ui"
@@ -189,5 +189,5 @@ end
 if (0 == nvim.fn.hlID("NtermError")) then
   highlight("NtermError", "d8d8d8", "ab4642")
 end
--- (popup table: 0x7ffff76f2b40 table: 0x7ffff752b4c0)
+-- (popup table: 0x7ffff77eeac0 table: 0x7ffff75d3830)
 return nil

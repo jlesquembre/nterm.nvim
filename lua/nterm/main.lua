@@ -1,4 +1,4 @@
-local _2afile_2a = "/nix/store/1946766wrh6mqy6kl5gng4wk4m7p7ywv-source/src/nterm/main.fnl"
+local _2afile_2a = "/nix/store/j9q1ilb1ydpgqdgygznhwxf0x7z2g7ar-source/src/nterm/main.fnl"
 local _0_
 do
   local name_0_ = "nterm.main"
@@ -190,7 +190,7 @@ do
       nvim.win_set_option(win_id, "winfixwidth", true)
     end
     local buf_id = nvim.win_get_buf(win_id)
-    nvim.buf_set_option(12, "buflisted", false)
+    nvim.buf_set_option(buf_id, "buflisted", false)
     return {win_id, buf_id}
   end
   v_0_ = open_window0
@@ -674,5 +674,5 @@ do
   t_0_["term_send_cur_line"] = v_0_
   term_send_cur_line = v_0_
 end
--- (init) (get-terms) (term_toggle) (term_send ls) (term_send ls foo) (term_send_cur_line) (term-open) (term-close) (term-stop) (get-term-win default) (tab-get-open-terms) (get-terms) (term-open) (term-open foo) (term-open bar) (nvim.set_current_win 1318) (term_send sleep 1; true default table: 0x7ffff7a1b7a0) (term_send sleep 2; false default)
+-- (init) (get-terms) (term_toggle) (term_send ls) (term_send ls foo) (term_send_cur_line) (term-open) (term-close) (term-stop) (get-term-win default) (tab-get-open-terms) (get-terms) (term-open) (term-open foo) (term-open bar) (nvim.set_current_win 1318) (term_send sleep 1; true default table: 0x7ffff778e528) (term_send sleep 2; false default)
 return nil
