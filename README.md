@@ -146,6 +146,7 @@ Telescope mappings:
 | ------ | ------- | ---------------------- |
 | insert | `<cr>`  | Open current selection |
 | insert | `<c-e>` | Create new terminal    |
+| insert | `<c-f>` | Focus terminal         |
 
 ## Similar projects
 
