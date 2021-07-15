@@ -127,7 +127,9 @@
   (if (= (a.get opts :direction) :horizontal)
     (nvim.win_set_option win-id "winfixheight" true)
     (nvim.win_set_option win-id "winfixwidth" true))
-  [win-id (nvim.win_get_buf win-id)])
+  (let [buf-id (nvim.win_get_buf win-id)]
+    (nvim.buf_set_option 12 :buflisted false)
+    [win-id buf-id]))
 
 
 (defn- check-term! [name]
