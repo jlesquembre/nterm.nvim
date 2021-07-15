@@ -1,10 +1,10 @@
-**Warning: WIP**. Only fish shell is currently fully functional. I plan to add
-support for bash and zsh (and maybe other shells), but I don't know when. PRs to
-support other shells are very welcome
+**WIP**. Only fish shell is currently fully functional. I plan to add support
+for bash and zsh (and maybe other shells), but I don't know when. PRs to support
+other shells are very welcome
 
 # nterm.nvim
 
-A neovim plugin to interact with the terminal emulator
+A neovim plugin to interact with the terminal emulator, with notifications.
 
 ## Demo
 
@@ -12,8 +12,8 @@ A neovim plugin to interact with the terminal emulator
 
 ## Installation
 
-[Neovim Nightly (0.5)](https://github.com/neovim/neovim/releases/tag/nightly)
-and [Olical/aniseed](https://github.com/Olical/aniseed) are required for
+[Neovim (0.5)](https://github.com/neovim/neovim/) and
+[Olical/aniseed](https://github.com/Olical/aniseed) are required for
 `nterm.nvim` to work.
 
 [netcat](https://en.wikipedia.org/wiki/Netcat) (`nc` command) must also be
@@ -62,13 +62,39 @@ require'nterm.main'.init({
 require('telescope').load_extension('nterm')
 ```
 
-The main function provided by `nterm.nvim` is `term_send`:
+Notice that `shell` option only is used if a terminal with that name doesn't
+exist. `size` and `direction` options are only used if the terminal is not
+visible. The other options are used in every command.
 
-`term_send(COMMAND, TERMINAL_NAME, OPTIONS)`
+### Public API
 
-Notice that `TERMINAL_NAME` and `OPTIONS` are optional. If terminal name is not
-specified, the `default` terminal will be used. It is required to specify a
-`TERMINAL_NAME` to use the `OPTIONS` argument.
+Notice that `TERMINAL_NAME` and `OPTIONS` all functions are optional. If
+terminal name is not specified, the `default` terminal will be used. It is
+required to specify a `TERMINAL_NAME` to use the `OPTIONS` argument. The
+`OPTIONS` is a table with the same options that the `init` function, and allows
+to override the default values.
+
+Remember to import the library first: `local nterm = require'nterm.main'`
+
+- `nterm.term_send(COMMAND, TERMINAL_NAME, OPTIONS)`: Send a command to a
+  terminal, creates and opens that terminal if required.
+
+- `nterm.term_toggle(OPTIONS)`: Toggle the terminal. When you hide the terminals
+  with this command, the layout is saved, and it will be the same when you
+  toggle again
+
+- `nterm.term_focus(TERMINAL_NAME, OPTIONS)`: Focus that terminal and enters
+  insert mode
+
+- `nterm.term_send_cur_line(TERMINAL_NAME)`: Sends the current line to the
+  terminal
+
+### Colors
+
+You can customize the pop-up colors setting the highlighting groups
+`NtermSuccess` and `NtermError`
+
+### Maps
 
 You can create your own mappings, overriding the default configuration provided
 to the `init` function:
@@ -81,16 +107,27 @@ vim.api.nvim_set_keymap(
 )
 ```
 
-Notice that `shell` option only is used if a terminal with that name doesn't
-exist. `size` and `direction` options are only used if the terminal is not
-visible. The other options are used in every command.
+Defauls mappings:
 
-### Colors
+| mode   | key           | Action                                                    |
+| ------ | ------------- | --------------------------------------------------------- |
+| normal | `<leader>tt`  | `term_toggle()`                                           |
+| normal | `<leader>tl`  | `term_send_cur_line()`                                    |
+| normal | `<leader>tf`  | `term_focus()`                                            |
+| normal | `<leader>gpp` | `term_send('git push', 'git')`                            |
+| normal | `<leader>gps` | `term_send('git push --set-upstream origin HEAD', 'git')` |
+| normal | `<leader>gpf` | `term_send('git push --force-with-lease', 'git')`         |
+| normal | `<leader>gpt` | `term_send('git push --tags', 'git')`                     |
+| normal | `<leader>gpu` | `term_send('git pull --ff-only', 'git')`                  |
+| normal | `<leader>gt`  | `term_focus('git')`                                       |
 
-You can customize the pop-up colors setting the highlighting groups
-`NtermSuccess` and `NtermError`
+### Notes
 
-### Maps
+- If you are writing some script, you can check for the `VIM` env variable to
+  know if the script is executed in a neovim terminal
+
+- The terminal name is saved in the `b:nterm_name` (to be used by vim scripts)
+  and in the `NTERM_NAME` env varible (to be used by shell scripts)
 
 ## Telescope extension
 
