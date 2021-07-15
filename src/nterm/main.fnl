@@ -15,39 +15,16 @@
 ;; - direction: how to open a terminal, horizontal or vertical
 ;; - size: Default size when a terminal is opened, in number of lines
 ;; - shell: Default shell when a new terminal is created
-;; - bg_color: background color for the terminal
+;; - bg_color: background color for the terminal (TODO)
 
 ;; You can check if the VIM env variable exists to do different customization
 ;; in your shell for neoterm. (e.g.: display a different prompt inside neovim)
 
 ;; Exposed variables (can be read by plugins/custom scripts):
 ;; - b:nterm_name (notice that the term-name is also appended to the buffer
-;; name. Buffer name is shown with `:ls` or with the api
-;; vim.api.nvim_buf_get_name(0)
+;; name. Buffer name is shown with `:ls!` or with the api vim.api.nvim_buf_get_name(0)
 ;; - g:current_term: current active terminal. Commands are send here, unless a
-;; term-name is explicitly passed
-
-;; Concepts
-;;
-
-
-;; Functions
-;; - (term_send line close-after term-name) => Sends a line to the term, openning
-;; it if closed. close-after is the number of seconds to close the terminal
-;; after a command is sucesfully executed. Default to -1 (don't close)
-;; - (term_toggle) => toggle all terminals. If all closed will reopen all the previusly closed by this command
-;; - (term-set-default term-name) => updates the default terminal
-;; (term-set-autocmd cmd term-name) =>
-;;
-;; Low level exposed functions
-;; (term-open term-name)
-;; (term-close term-name)
-;; (term-stop term-name)
-
-;; Ideas
-
-;; fuzzy finder to open a specific terminal(telescope integration?)
-;; open in float window? maybe useful for 1 time run commands, like k9s or pspg
+;; term-name is explicitly passed (TODO)
 
 
 (def filetype :nterm)
@@ -84,12 +61,6 @@
     (a.filter #(= filetype (nvim.buf_get_option $ :filetype)))
     (a.map get-term-by-buf)))
 
-
-; (defn- term-get [name attr]
-;   "Helper to get a terminal attribute"
-;   (if attr
-;     (a.get-in terms [name attr])
-;     (a.get terms name)))
 
 (defn- get-term-win [name]
   "Retuns the window id for the term in the current tab, or nil if the term is
@@ -298,7 +269,8 @@
   (let [opts {:noremap true
               :silent false}]
     (nvim.set_keymap "n" "<leader>tt" "<cmd>lua require'nterm.main'.term_toggle()<cr>" opts)
-    (nvim.set_keymap "n" "<leader>tl" "<cmd>lua require'nterm.main'.term_send_cur_line()<cr>" opts)))
+    (nvim.set_keymap "n" "<leader>tl" "<cmd>lua require'nterm.main'.term_send_cur_line()<cr>" opts)
+    (nvim.set_keymap "n" "<leader>tf" "<cmd>lua require'nterm.main'.term_focus()<cr>" opts)))
 
 (defn add-git-maps []
   (let [opts {:noremap true
@@ -387,6 +359,7 @@
 
   ;; Following fns accept an optional extra parameter, term-name. Defaults to :default
   (term_send "ls")
+  (term_send "ls" :foo)
   (term_send_cur_line)
   (term-open)
   (term-close)
@@ -399,6 +372,7 @@
 
   ;; Playground
   (get-terms)
+  (term-open)
   (term-open :foo)
   (term-open :bar)
   (nvim.set_current_win 1318)
