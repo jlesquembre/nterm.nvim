@@ -1,11 +1,11 @@
 (module telescope._extensions.nterm
-  {require {telescope :telescope
-            finders :telescope.finders
-            sorters :telescope.sorters
-            actions :telescope.actions
-            pickers :telescope.pickers
-            a       :aniseed.core
-            c       :telescope.command
+  {require {a         :aniseed.core
+            telescope :telescope
+            finders   :telescope.finders
+            sorters   :telescope.sorters
+            actions   :telescope.actions
+            pickers   :telescope.pickers
+            c         :telescope.command
             entry_display :telescope.pickers.entry_display
             state :telescope.state
             previewers :telescope.previewers
@@ -43,7 +43,12 @@
                     (map "i" "<c-e>"
                          (fn []
                            (actions.close bufnr)
-                           (nterm.term-open (actions_state.get_current_line)))))
+                           (nterm.term-open (actions_state.get_current_line))))
+                    (map "i" "<c-f>"
+                         (fn []
+                           (actions.close bufnr)
+                           (nterm.term_focus
+                             (a.get (actions_state.get_selected_entry) :display)))))
                   true)
 
 
