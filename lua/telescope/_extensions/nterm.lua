@@ -1,4 +1,4 @@
-local _2afile_2a = "/nix/store/vkwy6fc5655192skbll65sygf305hkzd-source/src/telescope/_extensions/nterm.fnl"
+local _2afile_2a = "/nix/store/1946766wrh6mqy6kl5gng4wk4m7p7ywv-source/src/telescope/_extensions/nterm.fnl"
 local _0_
 do
   local name_0_ = "telescope._extensions.nterm"
@@ -71,7 +71,11 @@ do
           actions.close(bufnr)
           return nterm["term-open"](actions_state.get_current_line())
         end
-        do end (actions.select_default):replace(_4_, map("i", "<c-e>", _5_))
+        local function _6_()
+          actions.close(bufnr)
+          return nterm.term_focus(a.get(actions_state.get_selected_entry(), "display"))
+        end
+        do end (actions.select_default):replace(_4_, map("i", "<c-e>", _5_), map("i", "<c-f>", _6_))
         return true
       end
       local function _4_(line)
