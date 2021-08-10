@@ -1,4 +1,4 @@
-local _2afile_2a = "/nix/store/j9q1ilb1ydpgqdgygznhwxf0x7z2g7ar-source/src/nterm/main.fnl"
+local _2afile_2a = "/nix/store/gxy70yz3vpgirqfgv62hwgq9wyql0wgb-source/src/nterm/main.fnl"
 local _0_
 do
   local name_0_ = "nterm.main"
@@ -674,5 +674,5 @@ do
   t_0_["term_send_cur_line"] = v_0_
   term_send_cur_line = v_0_
 end
--- (init) (get-terms) (term_toggle) (term_send ls) (term_send ls foo) (term_send_cur_line) (term-open) (term-close) (term-stop) (get-term-win default) (tab-get-open-terms) (get-terms) (term-open) (term-open foo) (term-open bar) (nvim.set_current_win 1318) (term_send sleep 1; true default table: 0x7ffff778e528) (term_send sleep 2; false default)
+-- (init) (get-terms) (term_toggle) (term_send ls) (term_send ls foo) (term_send_cur_line) (term-open) (term-close) (term-stop) (get-term-win default) (tab-get-open-terms) (get-terms) (term-open) (term-open foo) (term-open bar) (nvim.set_current_win 1318) (term_send sleep 1; true default table: 0x7ffff75b23a0) (term_send sleep 2; false default)
 return nil
