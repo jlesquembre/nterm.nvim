@@ -1,125 +1,125 @@
-local _2afile_2a = "/nix/store/gxy70yz3vpgirqfgv62hwgq9wyql0wgb-source/src/nterm/ui.fnl"
-local _0_
+local _2afile_2a = "/nix/store/imagl8m19a5j9370629sqa0ip1pcgr9w-source/src/nterm/ui.fnl"
+local _1_
 do
-  local name_0_ = "nterm.ui"
-  local module_0_
+  local name_4_auto = "nterm.ui"
+  local module_5_auto
   do
-    local x_0_ = package.loaded[name_0_]
-    if ("table" == type(x_0_)) then
-      module_0_ = x_0_
+    local x_6_auto = _G.package.loaded[name_4_auto]
+    if ("table" == type(x_6_auto)) then
+      module_5_auto = x_6_auto
     else
-      module_0_ = {}
+      module_5_auto = {}
     end
   end
-  module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
-  do end (module_0_)["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
-  do end (package.loaded)[name_0_] = module_0_
-  _0_ = module_0_
+  module_5_auto["aniseed/module"] = name_4_auto
+  module_5_auto["aniseed/locals"] = ((module_5_auto)["aniseed/locals"] or {})
+  do end (module_5_auto)["aniseed/local-fns"] = ((module_5_auto)["aniseed/local-fns"] or {})
+  do end (_G.package.loaded)[name_4_auto] = module_5_auto
+  _1_ = module_5_auto
 end
 local autoload
-local function _1_(...)
+local function _3_(...)
   return (require("aniseed.autoload")).autoload(...)
 end
-autoload = _1_
-local function _2_(...)
-  local ok_3f_0_, val_0_ = nil, nil
-  local function _2_()
+autoload = _3_
+local function _6_(...)
+  local ok_3f_21_auto, val_22_auto = nil, nil
+  local function _5_()
     return {require("aniseed.core"), require("aniseed.nvim"), require("aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_2_)
-  if ok_3f_0_ then
-    _0_["aniseed/local-fns"] = {require = {a = "aniseed.core", nvim = "aniseed.nvim", s = "aniseed.string"}}
-    return val_0_
+  ok_3f_21_auto, val_22_auto = pcall(_5_)
+  if ok_3f_21_auto then
+    _1_["aniseed/local-fns"] = {require = {a = "aniseed.core", nvim = "aniseed.nvim", s = "aniseed.string"}}
+    return val_22_auto
   else
-    return print(val_0_)
+    return print(val_22_auto)
   end
 end
-local _local_0_ = _2_(...)
-local a = _local_0_[1]
-local nvim = _local_0_[2]
-local s = _local_0_[3]
-local _2amodule_2a = _0_
+local _local_4_ = _6_(...)
+local a = _local_4_[1]
+local nvim = _local_4_[2]
+local s = _local_4_[3]
+local _2amodule_2a = _1_
 local _2amodule_name_2a = "nterm.ui"
-do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _1_, nil, {{}, nil, nil, nil}})[2] end
 local width
 do
-  local v_0_
+  local v_23_auto
   local function width0()
     return nvim.o.columns
   end
-  v_0_ = width0
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["width"] = v_0_
-  width = v_0_
+  v_23_auto = width0
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["width"] = v_23_auto
+  width = v_23_auto
 end
 local height
 do
-  local v_0_
+  local v_23_auto
   local function height0()
     return nvim.o.lines
   end
-  v_0_ = height0
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["height"] = v_0_
-  height = v_0_
+  v_23_auto = height0
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["height"] = v_23_auto
+  height = v_23_auto
 end
 local popup_pos
 do
-  local v_0_
+  local v_23_auto
   local function popup_pos0(anchor, size)
     local north = 2
     local west = 2
     local south = (height() - 4)
     local east = (width() - 2)
     local pos
-    local _3_
+    local _8_
     if ("NE" == anchor) then
-      _3_ = {box = {x1 = (east - size.width), x2 = east, y1 = north, y2 = (north + size.height)}, col = east, row = north}
+      _8_ = {box = {x1 = (east - size.width), x2 = east, y1 = north, y2 = (north + size.height)}, col = east, row = north}
     elseif ("SE" == anchor) then
-      _3_ = {box = {x1 = (east - size.width), x2 = east, y1 = (south - size.height), y2 = south}, col = east, row = south}
+      _8_ = {box = {x1 = (east - size.width), x2 = east, y1 = (south - size.height), y2 = south}, col = east, row = south}
     elseif ("SW" == anchor) then
-      _3_ = {box = {x1 = west, x2 = (west + size.width), y1 = (south - size.height), y2 = south}, col = west, row = south}
+      _8_ = {box = {x1 = west, x2 = (west + size.width), y1 = (south - size.height), y2 = south}, col = west, row = south}
     elseif ("NW" == anchor) then
-      _3_ = {box = {x1 = west, x2 = (west + size.width), y1 = north, y2 = (north + size.height)}, col = west, row = north}
+      _8_ = {box = {x1 = west, x2 = (west + size.width), y1 = north, y2 = (north + size.height)}, col = west, row = north}
     else
       nvim.err_writeln("anchor must be one of: NE, SE, SW, NW")
-      _3_ = popup_pos0("NE", size)
+      _8_ = popup_pos0("NE", size)
     end
-    pos = a.assoc(_3_, "anchor", anchor)
+    pos = a.assoc(_8_, "anchor", anchor)
     return {anchor = pos.anchor, col = pos.col, focusable = false, height = size.height, relative = "editor", row = pos.row, style = "minimal", width = size.width}
   end
-  v_0_ = popup_pos0
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["popup-pos"] = v_0_
-  popup_pos = v_0_
+  v_23_auto = popup_pos0
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["popup-pos"] = v_23_auto
+  popup_pos = v_23_auto
 end
 local max_length
 do
-  local v_0_
+  local v_23_auto
   local function max_length0(xs)
-    local function _3_(_241)
+    local function _10_(_241)
       return #_241
     end
-    return math.max(unpack(a.map(_3_, xs)))
+    return math.max(unpack(a.map(_10_, xs)))
   end
-  v_0_ = max_length0
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["max-length"] = v_0_
-  max_length = v_0_
+  v_23_auto = max_length0
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["max-length"] = v_23_auto
+  max_length = v_23_auto
 end
 local default_options
 do
-  local v_0_ = {hl = "NtermSuccess", pos = "SE", timeout = 2000}
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["default-options"] = v_0_
-  default_options = v_0_
+  local v_23_auto = {hl = "NtermSuccess", pos = "SE", timeout = 2000}
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["default-options"] = v_23_auto
+  default_options = v_23_auto
 end
 local popup
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function popup0(msg, options)
       local options0 = a.merge(default_options, options)
       local msg0
@@ -132,29 +132,29 @@ do
       local buf_id = nvim.create_buf(true, false)
       local win_opts = popup_pos(options0.pos, {height = (2 + lines), width = (2 + max_length(msg0))})
       local win = nvim.open_win(buf_id, false, win_opts)
-      local function _4_(_241)
+      local function _12_(_241)
         return (" " .. _241)
       end
-      nvim.buf_set_lines(buf_id, 1, lines, false, a.map(_4_, msg0))
+      nvim.buf_set_lines(buf_id, 1, lines, false, a.map(_12_, msg0))
       nvim.win_set_option(win, "winblend", 10)
       nvim.win_set_option(win, "winhl", ("Normal:" .. options0.hl))
-      local function _5_()
+      local function _13_()
         return nvim.buf_delete(buf_id, {force = true})
       end
-      vim.defer_fn(_5_, options0.timeout)
+      vim.defer_fn(_13_, options0.timeout)
       return win
     end
-    v_0_0 = popup0
-    _0_["popup"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = popup0
+    _1_["popup"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["popup"] = v_0_
-  popup = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["popup"] = v_23_auto
+  popup = v_23_auto
 end
 local highlight
 do
-  local v_0_
+  local v_23_auto
   local function highlight0(group, guifg, guibg, ctermfg, ctermbg, attr, guisp)
     local parts = {group}
     if guifg then
@@ -178,10 +178,10 @@ do
     end
     return nvim.command(("highlight " .. table.concat(parts, " ")))
   end
-  v_0_ = highlight0
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["highlight"] = v_0_
-  highlight = v_0_
+  v_23_auto = highlight0
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["highlight"] = v_23_auto
+  highlight = v_23_auto
 end
 if (0 == nvim.fn.hlID("NtermSuccess")) then
   highlight("NtermSuccess", "181818", "a1b56c")
@@ -189,5 +189,5 @@ end
 if (0 == nvim.fn.hlID("NtermError")) then
   highlight("NtermError", "d8d8d8", "ab4642")
 end
--- (popup table: 0x7ffff7551788 table: 0x7ffff78feb38)
+-- (popup ["Success!" "Command was ok"] {:hl "NtermError" :pos "NW" :timeout 2500})
 return nil
