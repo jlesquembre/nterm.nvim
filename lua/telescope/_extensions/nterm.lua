@@ -1,4 +1,4 @@
-local _2afile_2a = "/nix/store/imagl8m19a5j9370629sqa0ip1pcgr9w-source/src/telescope/_extensions/nterm.fnl"
+local _2afile_2a = "/nix/store/jq121hial3wxlw3chsvg2h16vdq96day-source/src/telescope/_extensions/nterm.fnl"
 local _1_
 do
   local name_4_auto = "telescope._extensions.nterm"
