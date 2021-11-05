@@ -1,96 +1,49 @@
-local _2afile_2a = "/nix/store/jq121hial3wxlw3chsvg2h16vdq96day-source/src/nterm/server.fnl"
-local _1_
-do
-  local name_4_auto = "nterm.server"
-  local module_5_auto
-  do
-    local x_6_auto = _G.package.loaded[name_4_auto]
-    if ("table" == type(x_6_auto)) then
-      module_5_auto = x_6_auto
-    else
-      module_5_auto = {}
-    end
-  end
-  module_5_auto["aniseed/module"] = name_4_auto
-  module_5_auto["aniseed/locals"] = ((module_5_auto)["aniseed/locals"] or {})
-  do end (module_5_auto)["aniseed/local-fns"] = ((module_5_auto)["aniseed/local-fns"] or {})
-  do end (_G.package.loaded)[name_4_auto] = module_5_auto
-  _1_ = module_5_auto
-end
-local autoload
-local function _3_(...)
-  return (require("aniseed.autoload")).autoload(...)
-end
-autoload = _3_
-local function _6_(...)
-  local ok_3f_21_auto, val_22_auto = nil, nil
-  local function _5_()
-    return {require("aniseed.core"), require("aniseed.nvim"), require("aniseed.string")}
-  end
-  ok_3f_21_auto, val_22_auto = pcall(_5_)
-  if ok_3f_21_auto then
-    _1_["aniseed/local-fns"] = {require = {a = "aniseed.core", nvim = "aniseed.nvim", s = "aniseed.string"}}
-    return val_22_auto
-  else
-    return print(val_22_auto)
-  end
-end
-local _local_4_ = _6_(...)
-local a = _local_4_[1]
-local nvim = _local_4_[2]
-local s = _local_4_[3]
-local _2amodule_2a = _1_
+local _2afile_2a = "/nix/store/02ncnrv0wjaadw8nv406wqvcrs27i3dr-source/src/nterm/server.fnl"
 local _2amodule_name_2a = "nterm.server"
-do local _ = ({nil, _1_, nil, {{}, nil, nil, nil}})[2] end
-local conn_handler
+local _2amodule_2a
 do
-  local v_23_auto
-  local function conn_handler0(f)
-    local function _8_(sock)
-      local function _9_(err, data)
-        if data then
-          local function _10_()
-            return f(data)
-          end
-          vim.schedule(_10_)
-          return sock:write("OK")
-        else
-          return sock:close()
+  package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = package.loaded[_2amodule_name_2a]
+end
+local _2amodule_locals_2a
+do
+  _2amodule_2a["aniseed/locals"] = {}
+  _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
+end
+local a, nvim, s = require("aniseed.core"), require("aniseed.nvim"), require("aniseed.string")
+do end (_2amodule_locals_2a)["a"] = a
+_2amodule_locals_2a["nvim"] = nvim
+_2amodule_locals_2a["s"] = s
+local function conn_handler(f)
+  local function _1_(sock)
+    local function _2_(err, data)
+      if data then
+        local function _3_()
+          return f(data)
         end
+        vim.schedule(_3_)
+        return sock:write("OK")
+      else
+        return sock:close()
       end
-      return sock:read_start(_9_)
     end
-    return _8_
+    return sock:read_start(_2_)
   end
-  v_23_auto = conn_handler0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["conn-handler"] = v_23_auto
-  conn_handler = v_23_auto
+  return _1_
 end
-local create_server
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function create_server0(host, port, f)
-      local server = vim.loop.new_tcp()
-      server:bind(host, port)
-      local function _12_(err)
-        local sock = vim.loop.new_tcp()
-        local on_connect = conn_handler(f)
-        server:accept(sock)
-        return on_connect(sock)
-      end
-      server:listen(128, _12_)
-      return server
-    end
-    v_25_auto = create_server0
-    _1_["create-server"] = v_25_auto
-    v_23_auto = v_25_auto
+_2amodule_locals_2a["conn-handler"] = conn_handler
+local function create_server(host, port, f)
+  local server = vim.loop.new_tcp()
+  server:bind(host, port)
+  local function _5_(err)
+    local sock = vim.loop.new_tcp()
+    local on_connect = conn_handler(f)
+    server:accept(sock)
+    return on_connect(sock)
   end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["create-server"] = v_23_auto
-  create_server = v_23_auto
+  server:listen(128, _5_)
+  return server
 end
--- (print (.. "TCP server on port " (a.get (server:getsockname) "port"))) (server:close)
+_2amodule_2a["create-server"] = create_server
+--[[ (print (.. "TCP server on port " (a.get (server:getsockname) "port"))) (server:close) ]]--
 return nil
