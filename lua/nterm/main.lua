@@ -1,4 +1,4 @@
-local _2afile_2a = "/nix/store/02ncnrv0wjaadw8nv406wqvcrs27i3dr-source/src/nterm/main.fnl"
+local _2afile_2a = "/nix/store/vazsjx8zs4p99pw6vdsb7j1dk2lb1ksw-source/src/nterm/main.fnl"
 local _2amodule_name_2a = "nterm.main"
 local _2amodule_2a
 do
@@ -291,7 +291,7 @@ _2amodule_2a["term_toggle"] = term_toggle
 local function add_maps()
   local opts = {noremap = true, silent = false}
   nvim.set_keymap("n", "<leader>tt", "<cmd>lua require'nterm.main'.term_toggle()<cr>", opts)
-  nvim.set_keymap("n", "<leader>tl", "<cmd>lua require'nterm.main'.term_send_cur_line()<cr>", opts)
+  nvim.set_keymap("n", "<leader>tl", "<cmd>lua require'nterm.main'.term_send_cur_line(nil, {autoclose=0})<cr>", opts)
   return nvim.set_keymap("n", "<leader>tf", "<cmd>lua require'nterm.main'.term_focus()<cr>", opts)
 end
 _2amodule_2a["add-maps"] = add_maps
@@ -369,14 +369,14 @@ local function highlight(start, _end, rtype)
   return vim.defer_fn(_39_, 500)
 end
 _2amodule_locals_2a["highlight"] = highlight
-local function term_send_cur_line(name)
+local function term_send_cur_line(name, opts)
   local line_nr = a.dec(vim.fn.line("."))
   local _let_40_ = trim_with_pos(nvim.get_current_line())
   local line = _let_40_[1]
   local col_start = _let_40_[2]
   local col_end = _let_40_[3]
   highlight({line_nr, col_start}, {line_nr, col_end})
-  return term_send(line, name)
+  return term_send(line, name, opts)
 end
 _2amodule_2a["term_send_cur_line"] = term_send_cur_line
 --[[ (init) (get-terms) (term_toggle) (term_send "ls") (term_send "ls" "foo") (term_send_cur_line) (term-open) (term-close) (term-stop) (get-term-win "default") (tab-get-open-terms) (get-terms) (term-open) (term-open "foo") (term-open "bar") (nvim.set_current_win 1318) (term_send "sleep 1; true" "default" {:autoclose 1000 :popup 1000 :popup_pos "NW"}) (term_send "sleep 2; false" "default") ]]--
