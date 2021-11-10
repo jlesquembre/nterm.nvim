@@ -269,7 +269,7 @@
   (let [opts {:noremap true
               :silent false}]
     (nvim.set_keymap "n" "<leader>tt" "<cmd>lua require'nterm.main'.term_toggle()<cr>" opts)
-    (nvim.set_keymap "n" "<leader>tl" "<cmd>lua require'nterm.main'.term_send_cur_line()<cr>" opts)
+    (nvim.set_keymap "n" "<leader>tl" "<cmd>lua require'nterm.main'.term_send_cur_line(nil, {autoclose=0})<cr>" opts)
     (nvim.set_keymap "n" "<leader>tf" "<cmd>lua require'nterm.main'.term_focus()<cr>" opts)))
 
 (defn add-git-maps []
@@ -344,11 +344,11 @@
                   500)))
 
 
-(defn term_send_cur_line [name]
+(defn term_send_cur_line [name opts]
   (let [line-nr (a.dec (vim.fn.line "."))
         [line col-start col-end] (trim-with-pos (nvim.get_current_line))]
     (highlight [line-nr col-start] [line-nr col-end])
-    (term_send line name)))
+    (term_send line name opts)))
 
 
 (comment
