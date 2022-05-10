@@ -1,4 +1,4 @@
-local _2afile_2a = "/nix/store/vazsjx8zs4p99pw6vdsb7j1dk2lb1ksw-source/src/telescope/_extensions/nterm.fnl"
+local _2afile_2a = "/nix/store/mpsfl9pjqg42s4g79p5q4xka4rr1i226-source/src/telescope/_extensions/nterm.fnl"
 local _2amodule_name_2a = "telescope._extensions.nterm"
 local _2amodule_2a
 do
@@ -56,4 +56,5 @@ local function _6_(_241)
   local opts = (_241 or {})
   return nterm_finder(opts)
 end
-return telescope.register_extension({exports = {nterm = _6_}})
+telescope.register_extension({exports = {nterm = _6_}})
+return _2amodule_2a

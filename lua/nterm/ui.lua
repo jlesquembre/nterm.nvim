@@ -1,4 +1,4 @@
-local _2afile_2a = "/nix/store/vazsjx8zs4p99pw6vdsb7j1dk2lb1ksw-source/src/nterm/ui.fnl"
+local _2afile_2a = "/nix/store/mpsfl9pjqg42s4g79p5q4xka4rr1i226-source/src/nterm/ui.fnl"
 local _2amodule_name_2a = "nterm.ui"
 local _2amodule_2a
 do
@@ -118,4 +118,4 @@ if (0 == nvim.fn.hlID("NtermError")) then
 else
 end
 --[[ (popup ["Success!" "Command was ok"] {:hl "NtermError" :pos "NW" :timeout 2500}) ]]--
-return nil
+return _2amodule_2a

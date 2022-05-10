@@ -1,4 +1,4 @@
-local _2afile_2a = "/nix/store/vazsjx8zs4p99pw6vdsb7j1dk2lb1ksw-source/src/nterm/main.fnl"
+local _2afile_2a = "/nix/store/mpsfl9pjqg42s4g79p5q4xka4rr1i226-source/src/nterm/main.fnl"
 local _2amodule_name_2a = "nterm.main"
 local _2amodule_2a
 do
@@ -18,7 +18,7 @@ _2amodule_locals_2a["server-utils"] = server_utils
 _2amodule_locals_2a["ui"] = ui
 local filetype = "nterm"
 _2amodule_2a["filetype"] = filetype
-local terms = (terms or {})
+local terms = ((_2amodule_2a).terms or {})
 do end (_2amodule_2a)["terms"] = terms
 local options = {maps = true, size = 20, direction = "horizontal", shell = "fish", popup = 2000, popup_pos = "NE", autoclose = 2000}
 _2amodule_2a["options"] = options
@@ -380,4 +380,4 @@ local function term_send_cur_line(name, opts)
 end
 _2amodule_2a["term_send_cur_line"] = term_send_cur_line
 --[[ (init) (get-terms) (term_toggle) (term_send "ls") (term_send "ls" "foo") (term_send_cur_line) (term-open) (term-close) (term-stop) (get-term-win "default") (tab-get-open-terms) (get-terms) (term-open) (term-open "foo") (term-open "bar") (nvim.set_current_win 1318) (term_send "sleep 1; true" "default" {:autoclose 1000 :popup 1000 :popup_pos "NW"}) (term_send "sleep 2; false" "default") ]]--
-return nil
+return _2amodule_2a

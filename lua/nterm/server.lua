@@ -1,4 +1,4 @@
-local _2afile_2a = "/nix/store/vazsjx8zs4p99pw6vdsb7j1dk2lb1ksw-source/src/nterm/server.fnl"
+local _2afile_2a = "/nix/store/mpsfl9pjqg42s4g79p5q4xka4rr1i226-source/src/nterm/server.fnl"
 local _2amodule_name_2a = "nterm.server"
 local _2amodule_2a
 do
@@ -46,4 +46,4 @@ local function create_server(host, port, f)
 end
 _2amodule_2a["create-server"] = create_server
 --[[ (print (.. "TCP server on port " (a.get (server:getsockname) "port"))) (server:close) ]]--
-return nil
+return _2amodule_2a
