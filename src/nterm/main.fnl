@@ -76,8 +76,8 @@
 
 (defn- open-window [opts]
   "Creates a new window and buffer, returns the window and buffer ID"
-  (let [open-term (-> (tab-get-open-terms) a.last get-term-win)]
-    (nvim.set_current_win open-term)
+  (let [open-term (-?> (tab-get-open-terms) a.last get-term-win)]
+    (nvim.set_current_win (or open-term 0))
     (if (= (a.get opts :direction) :horizontal)
       (if open-term
         (nvim.command "rightbelow vnew")
@@ -102,17 +102,22 @@
     (nvim.buf_set_option buf-id :buflisted false)
     [win-id buf-id]))
 
+(defn- valid-buf?
+  [buf-id]
+  (if (= "number" (type buf-id))
+    (nvim.buf_is_valid buf-id)
+    false))
 
 (defn- check-term! [name]
   "Checks if the buffer associated with the term is still valid. Maybe it was
    manually closed by the user. If not valid, remove it from the table"
   (let [buf-id (a.get-in terms [name :buf])]
-    (when (not (nvim.buf_is_valid buf-id))
+    (when (not (valid-buf? buf-id))
       (a.assoc terms name nil))))
 
 (defn- term-destroy [name]
   (let [buf-id (a.get-in terms [name :buf])]
-    (if (nvim.buf_is_valid buf-id)
+    (if (valid-buf? buf-id)
       (nvim.buf_delete buf-id {:force true})))
   (a.assoc terms name nil))
 
