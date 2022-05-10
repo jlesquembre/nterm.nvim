@@ -1,4 +1,4 @@
-local _2afile_2a = "/nix/store/mpsfl9pjqg42s4g79p5q4xka4rr1i226-source/src/nterm/main.fnl"
+local _2afile_2a = "/nix/store/slv17irph93vfbqs49mlgdn5m7zh0ssi-source/src/nterm/main.fnl"
 local _2amodule_name_2a = "nterm.main"
 local _2amodule_2a
 do
@@ -68,8 +68,21 @@ end
 _2amodule_locals_2a["get-term-win"] = get_term_win
 local function open_window(opts)
   do
-    local open_term = get_term_win(a.last(tab_get_open_terms()))
-    nvim.set_current_win(open_term)
+    local open_term
+    do
+      local _7_ = tab_get_open_terms()
+      if (nil ~= _7_) then
+        local _8_ = a.last(_7_)
+        if (nil ~= _8_) then
+          open_term = get_term_win(_8_)
+        else
+          open_term = _8_
+        end
+      else
+        open_term = _7_
+      end
+    end
+    nvim.set_current_win((open_term or 0))
     if (a.get(opts, "direction") == "horizontal") then
       if open_term then
         nvim.command("rightbelow vnew")
@@ -99,9 +112,17 @@ local function open_window(opts)
   return {win_id, buf_id}
 end
 _2amodule_locals_2a["open-window"] = open_window
+local function valid_buf_3f(buf_id)
+  if ("number" == type(buf_id)) then
+    return nvim.buf_is_valid(buf_id)
+  else
+    return false
+  end
+end
+_2amodule_locals_2a["valid-buf?"] = valid_buf_3f
 local function check_term_21(name)
   local buf_id = a["get-in"](terms, {name, "buf"})
-  if not nvim.buf_is_valid(buf_id) then
+  if not valid_buf_3f(buf_id) then
     return a.assoc(terms, name, nil)
   else
     return nil
@@ -111,7 +132,7 @@ _2amodule_locals_2a["check-term!"] = check_term_21
 local function term_destroy(name)
   do
     local buf_id = a["get-in"](terms, {name, "buf"})
-    if nvim.buf_is_valid(buf_id) then
+    if valid_buf_3f(buf_id) then
       nvim.buf_delete(buf_id, {force = true})
     else
     end
@@ -172,13 +193,13 @@ local function show_popup(term_name, exit_code, cmd, opts)
     else
       msg = {("ERROR CODE: " .. exit_code), ("Terminal: " .. term_name), ("Cmd: " .. cmd)}
     end
-    local _18_
+    local _23_
     if ok then
-      _18_ = "NtermSuccess"
+      _23_ = "NtermSuccess"
     else
-      _18_ = "NtermError"
+      _23_ = "NtermError"
     end
-    return ui.popup(msg, {timeout = timeout, pos = opts.popup_pos, hl = _18_})
+    return ui.popup(msg, {timeout = timeout, pos = opts.popup_pos, hl = _23_})
   else
     return nil
   end
@@ -187,22 +208,22 @@ _2amodule_locals_2a["show-popup"] = show_popup
 local function process_client_response(data)
   local name, exit_code, term_cmd = unpack(s.split(s.trim(data), "\13\n"))
   local exit_code0 = tonumber(exit_code)
-  local _let_21_ = a["get-in"](terms, {name, "current-cmd"}, {})
-  local cmd = _let_21_["cmd"]
-  local opts = _let_21_["opts"]
+  local _let_26_ = a["get-in"](terms, {name, "current-cmd"}, {})
+  local cmd = _let_26_["cmd"]
+  local opts = _let_26_["opts"]
   local opts0 = a.merge(options, (opts or {}))
   if (cmd == term_cmd) then
     show_popup(name, exit_code0, cmd, opts0)
     a["assoc-in"](terms, {name, "current-cmd"}, nil)
     if ((0 == exit_code0) and (0 < opts0.autoclose)) then
-      local function _22_()
+      local function _27_()
         if a["nil?"](a["get-in"](terms, {name, "current-cmd"})) then
           return term_close(name)
         else
           return nil
         end
       end
-      vim.defer_fn(_22_, opts0.autoclose)
+      vim.defer_fn(_27_, opts0.autoclose)
     else
     end
     return {name = name, code = exit_code0}
@@ -224,9 +245,9 @@ local function init_server()
 end
 _2amodule_2a["init-server"] = init_server
 local function term_new(name, opts)
-  local _let_27_ = open_window(opts)
-  local win_id = _let_27_[1]
-  local buf_id = _let_27_[2]
+  local _let_32_ = open_window(opts)
+  local win_id = _let_32_[1]
+  local buf_id = _let_32_[2]
   local shell = a.get(opts, "shell")
   local script = script_path(shell)
   local extra_args
@@ -239,19 +260,19 @@ local function term_new(name, opts)
   nvim.buf_set_option(buf_id, "filetype", filetype)
   nvim.buf_set_var(buf_id, "nterm_name", name)
   local job_id
-  local function _29_()
+  local function _34_()
     return term_destroy(name)
   end
-  job_id = vim.fn.termopen(cmd, {on_exit = _29_, env = {SHELL = shell, NTERM_PORT = a.get(nterm_server:getsockname(), "port"), NTERM_NAME = name}})
+  job_id = vim.fn.termopen(cmd, {on_exit = _34_, env = {SHELL = shell, NTERM_PORT = a.get(nterm_server:getsockname(), "port"), NTERM_NAME = name}})
   nvim.win_set_cursor(win_id, {nvim.buf_line_count(buf_id), 1})
   return a.assoc(terms, name, {name = name, buf = buf_id, cmds = {}, ["current-cmd"] = nil, job = job_id})
 end
 _2amodule_locals_2a["term-new"] = term_new
 local function term_display(name, opts)
   local buf_id = a["get-in"](terms, {name, "buf"})
-  local _let_30_ = open_window(opts)
-  local win_id = _let_30_[1]
-  local old_buf_id = _let_30_[2]
+  local _let_35_ = open_window(opts)
+  local win_id = _let_35_[1]
+  local old_buf_id = _let_35_[2]
   nvim.command("wincmd p")
   nvim.win_set_buf(win_id, buf_id)
   return nvim.buf_delete(old_buf_id, {})
@@ -281,10 +302,10 @@ local function term_toggle(opts)
     nvim.g._nterm_terms = open_terms
     return a["run!"](term_close, open_terms)
   else
-    local function _33_(_241)
+    local function _38_(_241)
       return term_open(_241, opts0)
     end
-    return a["run!"](_33_, (nvim.g._nterm_terms or {"default"}))
+    return a["run!"](_38_, (nvim.g._nterm_terms or {"default"}))
   end
 end
 _2amodule_2a["term_toggle"] = term_toggle
@@ -363,18 +384,18 @@ local function highlight(start, _end, rtype)
   local buf = nvim.get_current_buf()
   local rtype0 = (rtype or "c")
   vim.highlight.range(buf, ns, "IncSearch", start, _end, rtype0)
-  local function _39_()
+  local function _44_()
     return nvim.buf_clear_namespace(buf, ns, a.first(start), a.inc(a.first(_end)))
   end
-  return vim.defer_fn(_39_, 500)
+  return vim.defer_fn(_44_, 500)
 end
 _2amodule_locals_2a["highlight"] = highlight
 local function term_send_cur_line(name, opts)
   local line_nr = a.dec(vim.fn.line("."))
-  local _let_40_ = trim_with_pos(nvim.get_current_line())
-  local line = _let_40_[1]
-  local col_start = _let_40_[2]
-  local col_end = _let_40_[3]
+  local _let_45_ = trim_with_pos(nvim.get_current_line())
+  local line = _let_45_[1]
+  local col_start = _let_45_[2]
+  local col_end = _let_45_[3]
   highlight({line_nr, col_start}, {line_nr, col_end})
   return term_send(line, name, opts)
 end

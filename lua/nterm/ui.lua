@@ -1,4 +1,4 @@
-local _2afile_2a = "/nix/store/mpsfl9pjqg42s4g79p5q4xka4rr1i226-source/src/nterm/ui.fnl"
+local _2afile_2a = "/nix/store/slv17irph93vfbqs49mlgdn5m7zh0ssi-source/src/nterm/ui.fnl"
 local _2amodule_name_2a = "nterm.ui"
 local _2amodule_2a
 do
