@@ -383,3 +383,36 @@
   (nvim.set_current_win 1318)
   (term_send "sleep 1; true" :default {:popup_pos :NW :popup 1000 :autoclose 1000})
   (term_send "sleep 2; false" :default))
+
+
+
+; (comment
+;   (let [{:width editor_w} (a.first (nvim.list_uis))]
+;     w)
+
+; (fn open-float
+;   [w h]
+;   (let [{:width editor-w :height editor-h} (a.first (nvim.list_uis))
+;         buf (nvim.create_buf false true) ; listed scratch
+;         opts {:relative "editor"
+;               :width w
+;               :height h
+;               :style :minimal
+;               :border :rounded
+;               :col (* 0.5 (- editor-w w))
+;               :row (* 0.5 (- editor-h h))}
+;         win (nvim.open_win buf 0 opts)]
+;     (nvim.buf_set_lines buf 0 -1 true ["test" "text"])
+;     (nvim.win_set_option win "winhl" "Normal:Normal")))
+
+; (comment
+;   (open-float 90 10))
+
+    ; let buf = nvim_create_buf(v:false, v:true)
+    ; call nvim_buf_set_lines(buf, 0, -1, v:true, ["test", "text"])
+
+    ; let opts = {'relative': 'cursor', 'width': 10, 'height': 2, 'col': 0,
+    ;     \ 'row': 1, 'anchor': 'NW', 'style': 'minimal'}
+    ; let win = nvim_open_win(buf, 0, opts)
+    ; " optional: change highlight, otherwise Pmenu is used
+    ; call nvim_win_set_option(win, 'winhl', 'Normal:MyHighlight')

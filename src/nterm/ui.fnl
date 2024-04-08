@@ -89,8 +89,32 @@
 (when (= 0 (nvim.fn.hlID "NtermError"))
   (highlight "NtermError" "d8d8d8" "ab4642"))
 
+(fn round
+  [x]
+  (math.floor (+ 0.5 x)))
+
+(fn open-float
+  [w h]
+  (let [buf (nvim.create_buf false true) ; listed scratch
+        w (* w (width))
+        h (* h (height))
+        opts {:relative "editor"
+              :width (round w)
+              :height (round h)
+              :style :minimal
+              :border :rounded
+              :col (* 0.5 (- (width)  w))
+              :row (* 0.5 (- (height) h))}
+        win (nvim.open_win buf 0 opts)]
+    (nvim.buf_set_lines buf 0 -1 true ["test" "text"])
+    (nvim.win_set_option win "winhl" "Normal:Normal,FloatBorder:Normal")
+    opts))
+
 
 (comment
+  (math.floor 0.5)
+  (open-float 0.9 0.85)
+  (open-float 0.95 0.9)
   (popup ["Success!"  "Command was ok"]
          {:timeout 2500
           :hl :NtermError
